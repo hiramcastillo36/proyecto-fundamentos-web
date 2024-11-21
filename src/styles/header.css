@@ -1,0 +1,39 @@
+.header {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  header {
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    font-weight: 600;
+    font-size: clamp(1.25rem, 4vw, 1.5rem);
+  }
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+  }
+  
+  
+  .nav-links {
+    display: flex;
+    gap: var(--spacing-lg);
+  }
+  
+  .nav-links a {
+    text-decoration: none;
+    color: #666;
+  }

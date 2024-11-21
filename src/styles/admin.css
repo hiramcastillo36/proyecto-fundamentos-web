@@ -1,0 +1,133 @@
+/* Nuevos estilos para el panel de administración */
+
+.welcome {
+    font-size: 2.5rem;
+    font-weight: 400;
+    margin-bottom: 2rem;
+    font-family: serif;
+  }
+
+  .subscribers-table {
+    width: 100%;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.admin-nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+.admin-nav a {
+    text-decoration: none;
+    color: #666;
+    padding: 0.5rem 1rem;
+  }
+
+.editor-toolbar {
+    background: #fff;
+    border-bottom: 1px solid #e1e1e1;
+    padding: 0.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+    gap: 0.25rem;
+}
+
+.editor-button {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: none;
+    border-radius: 4px;
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editor-button:hover {
+    background-color: #f0f0f0;
+}
+
+.editor-content {
+    min-height: 300px;
+    padding: 1.5rem;
+}
+  
+.upload-form {
+    background-color: #f8f8f8;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.editor {
+    background: white;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.preview-area {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    min-height: 100px;
+    display: none;
+}
+
+.upload-area {
+    border: 2px dashed #e1e1e1;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+    background-color: #f8f8f8;
+}
+
+.upload-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 1rem;
+    color: #666;
+}
+
+.save-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+  
+  .save-button:hover {
+    background-color: #357abd;
+  }
+
+  .preview-area {
+    display: none;
+    margin-top: 20px;
+  }
+  
+  .preview-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
