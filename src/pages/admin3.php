@@ -2,6 +2,13 @@
 
 session_start();
 
+$cad = new CAD();
+    $user = null;
+
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        $user = $cad->getUserById($_SESSION['user_id']);
+    }
+
 ?>
 
 <!DOCTYPE html>
@@ -17,12 +24,15 @@ session_start();
     <div class="container">
         <div class="topnav" id="myTopnav">
             <a href="../index.php" class="active">BYTE Y PIXEL</a>
-            <div class="navoptions">
-                <a href="pages/about.html">About</a>
+            <div class="navoptions" id="navOptions">
+            <a href="pages/about.html">About</a>
+                <?php if ($user) { ?>
+                    <a href="bd/logout.php">Logout</a>
+                <?php } else { ?>
+                    <a href="pages/login.php">Login</a>
+                    <a href="pages/signup.php">Sign Up</a>
+                <?php } ?>
             </div>
-            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-                <i class="fa fa-bars"></i>
-            </a>
         </div>
 
         <main class="main">

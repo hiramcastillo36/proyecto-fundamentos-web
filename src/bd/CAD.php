@@ -146,6 +146,15 @@ class CAD {
         return $post;
     }
 
+    public function getUserById($id){
+        $query = "SELECT * FROM users WHERE id = :id";
+        $stmt = $this->conexion->conectar()->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user;
+    }
+
 }
 
 

@@ -1,10 +1,19 @@
 <?php
   include_once("../bd/CAD.php");
 
+  session_start();
+
   $post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
+    $cad = new CAD();
+
+    $user = null;
+
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        $user = $cad->getUserById($_SESSION['user_id']);
+    }
+
     if (isset($_POST['email'])) {
-        $cad = new CAD();
         $result = $cad->insertNewsletter($_POST['email']);
     }
 
@@ -13,6 +22,7 @@
     $cad = new CAD();
     $post = $cad->getPost($post_id);
 
+    $allPosts = $cad->getAllPosts(0, 6);
 ?>
 
 <!DOCTYPE html>
@@ -34,13 +44,15 @@
     <div class="container">
       <div class="topnav" id="myTopnav">
         <a href="../index.html" class="active">BYTE Y PIXEL</a>
-        <div class="navoptions">
-
+        <div class="navoptions" id="navOptions">
           <a href="about.html">About</a>
+            <?php if ($user) { ?>
+                <a href="bd/logout.php">Logout</a>
+            <?php } else { ?>
+                <a href="login.php">Login</a>
+                <a href="signup.php">Sign Up</a>
+            <?php } ?>
         </div>
-        <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-          <i class="fa fa-bars"></i>
-        </a>
       </div>
 
         <main>
@@ -61,7 +73,7 @@
                     <div class="article-meta">
                       <div class="article-info">
                         <div class="author"><?php echo $post['author_name']; ?></div>
-                        <div class="date">April 15, 2020 4 min read</div>
+                        <div class="date"><?php echo date("l, F j, Y", strtotime($post['created_at'])); ?> <?php echo $post['read_time']; ?> min read</div>
                       </div>
                         <div class="share">
                             <div class="share-icon">
@@ -105,57 +117,18 @@
                   </div>
               </div>
 
-
                 <h2>What to read next</h2>
                 <div class="article-grid">
-                  <a href="../pages/article.php">
-                    <div class="article-preview">
-                      <img src="../assets/images/5356790d830d59385873020c6e143cf8a787345f.png" alt="Image">
-                      <p>
-                        Hello world, or, in other words, why this blog exists
-                      </p>
-                    </div>
-                  </a>
-                  <a href="../pages/article.php">
-                    <div class="article-preview">
-                      <img src="../assets/images/5356790d830d59385873020c6e143cf8a787345f.png" alt="Image">
-                      <p>
-                        Hello world, or, in other words, why this blog exists
-                      </p>
-                    </div>
-                  </a>
-                  <a href="../pages/article.php">
-                    <div class="article-preview">
-                      <img src="../assets/images/5356790d830d59385873020c6e143cf8a787345f.png" alt="Image">
-                      <p>
-                        Hello world, or, in other words, why this blog exists
-                      </p>
-                    </div>
-                  </a>
-                  <a href="../pages/article.php">
-                    <div class="article-preview">
-                      <img src="../assets/images/5356790d830d59385873020c6e143cf8a787345f.png" alt="Image">
-                      <p>
-                        Hello world, or, in other words, why this blog exists
-                      </p>
-                    </div>
-                  </a>
-                  <a href="../pages/article.php">
-                    <div class="article-preview">
-                      <img src="../assets/images/5356790d830d59385873020c6e143cf8a787345f.png" alt="Image">
-                      <p>
-                        Hello world, or, in other words, why this blog exists
-                      </p>
-                    </div>
-                  </a>
-                  <a href="../pages/article.php">
-                    <div class="article-preview">
-                      <img src="../assets/images/5356790d830d59385873020c6e143cf8a787345f.png" alt="Image">
-                      <p>
-                        Hello world, or, in other words, why this blog exists
-                      </p>
-                    </div>
-                  </a>
+                <?php foreach ($allPosts as $post) { ?>
+                        <a href="../pages/article.php?id=<?php echo $post['id']; ?>">
+                            <div class="article-preview">
+                                <img src="../uploads/<?php echo $post['image']; ?>" alt="Image">
+                            <p>
+                                <?php echo $post['title']; ?>
+                            </p>
+                            </div>
+                        </a>
+                    <?php } ?>
                 </div>
             </section>
 
@@ -169,7 +142,7 @@
                     </div>
                 <?php } ?>
 
-                <form class="newsletter-form" action="article.php" method="post">
+                <form class="newsletter-form" action="article.php?id=<?php echo $post['id']; ?>" method="post">
                     <input type="email" placeholder="Enter your email..." name="email" required>
                     <button type="submit">Sign up</button>
                 </form>

@@ -1,8 +1,19 @@
 <?php
-  include_once("bd/conexion.php");
+
+    session_start();
+
+    include_once("bd/conexion.php");
     include_once("bd/CAD.php");
+
     $conexion = new Conexion();
     $conexion = $conexion->conectar();
+
+    $cad = new CAD();
+    $user = null;
+
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        $user = $cad->getUserById($_SESSION['user_id']);
+    }
 
     if (isset($_POST['email'])) {
         try {
@@ -14,12 +25,17 @@
         } catch (Exception $e) {
             $result = false;
         }
+
+
     }
+
 
     unset($_POST['email']);
 
     $cad = new CAD();
     $allPosts = $cad->getAllPosts(0, 6);
+
+
 
 ?>
 
@@ -44,6 +60,12 @@
         <a href="index.html" class="active">BYTE Y PIXEL</a>
         <div class="navoptions" id="navOptions">
           <a href="pages/about.html">About</a>
+            <?php if ($user) { ?>
+                <a href="bd/logout.php">Logout</a>
+            <?php } else { ?>
+                <a href="pages/login.php">Login</a>
+                <a href="pages/signup.php">Sign Up</a>
+            <?php } ?>
         </div>
         <a href="javascript:void(0);" class="icon" onclick="myFunction()">
           <i class="fa fa-bars"></i>

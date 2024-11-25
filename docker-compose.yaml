@@ -6,7 +6,6 @@ services:
     build:
       context: .
     container_name: php_app
-    restart: always
     ports:
       - "80:80"
     volumes:
@@ -23,7 +22,6 @@ services:
   mysql:
     image: mysql:8.0
     container_name: mysql_db
-    restart: always
     ports:
       - "3306:3306"
     environment:
@@ -38,7 +36,6 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
-    restart: always
     ports:
       - "8080:80"
     environment:
