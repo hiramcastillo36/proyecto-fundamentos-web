@@ -1,4 +1,6 @@
 <?php
+    session_start();
+
     include_once '../bd/CAD.php';
 
     $cad = new CAD();
@@ -6,6 +8,11 @@
 
     if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         $user = $cad->getUserById($_SESSION['user_id']);
+    }
+
+    if ($user === null || $user['role'] !== 'admin') {
+        header('Location: index.php');
+        exit;
     }
 
     // Pagination settings

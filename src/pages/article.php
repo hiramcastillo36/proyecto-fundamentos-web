@@ -1,9 +1,9 @@
 <?php
-  include_once("../bd/CAD.php");
+    include_once("../bd/CAD.php");
 
-  session_start();
+    session_start();
 
-  $post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
     $cad = new CAD();
 
@@ -17,7 +17,18 @@
         $result = $cad->insertNewsletter($_POST['email']);
     }
 
+    if (isset($_POST['comment']) && $user) {
+        $comment = trim($_POST['comment']);
+        if (!empty($comment)) {
+            $cad->createComment($post_id, $user['id'], $comment);
+        }
+        // Redirigir para evitar reenvío del formulario
+        header("Location: article.php?id=" . $post_id);
+        exit();
+    }
+
     unset($_POST['email']);
+    unset($_POST['comment']);
 
     $cad = new CAD();
     $post = $cad->getPost($post_id);
@@ -43,7 +54,7 @@
 <body>
     <div class="container">
       <div class="topnav" id="myTopnav">
-        <a href="../index.html" class="active">BYTE Y PIXEL</a>
+        <a href="../index.php" class="active">BYTE Y PIXEL</a>
         <div class="navoptions" id="navOptions">
           <a href="about.html">About</a>
             <?php if ($user) { ?>
@@ -132,13 +143,56 @@
                 </div>
             </section>
 
+            <section class="comments">
+    <h2>Comments</h2>
+
+    <?php if ($user) { ?>
+        <div class="comment-form">
+            <h3>Leave a comment</h3>
+            <form action="article.php?id=<?php echo $post_id; ?>" method="post">
+                <textarea placeholder="Write your comment here..." name="comment" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    <?php } else { ?>
+        <div class="login-prompt">
+            <p>Please <a href="login.php">login</a> to leave a comment.</p>
+        </div>
+    <?php } ?>
+
+    <div class="comment-box">
+        <?php
+        $comments = $cad->getCommentsByPostId($post_id);
+        if (!empty($comments)) {
+            foreach ($comments as $comment) {
+        ?>
+            <div class="comment">
+                <div class="comment-author"
+                         alt="<?php echo htmlspecialchars($comment['author_name']); ?>">
+                    <div class="author-info">
+                        <div class="author-name"><?php echo htmlspecialchars($comment['author_name']); ?></div>
+                        <div class="comment-date"><?php echo date("F j, Y", strtotime($comment['created_at'])); ?></div>
+                    </div>
+                </div>
+                <div class="comment-text">
+                    <p><?php echo nl2br(htmlspecialchars($comment['text'])); ?></p>
+                </div>
+            </div>
+        <?php
+            }
+        } else { ?>
+            <p class="no-comments">No comments yet. Be the first to comment!</p>
+        <?php } ?>
+    </div>
+</section>
+
             <section class="newsletter">
                 <h2>Sign up for the newsletter</h2>
                 <p>If you want to be notified when we publish something new, sign up for the newsletter:</p>
 
                 <?php if (isset($result) && $result) { ?>
                     <div>
-                        <p>Thank you for signing up!</p>
+                        <p>Thank you!</p>
                     </div>
                 <?php } ?>
 

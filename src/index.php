@@ -57,7 +57,7 @@
 <body>
     <div class="container">
       <div class="topnav" id="myTopnav">
-        <a href="index.html" class="active">BYTE Y PIXEL</a>
+        <a href="index.php" class="active">BYTE Y PIXEL</a>
         <div class="navoptions" id="navOptions">
           <a href="pages/about.html">About</a>
             <?php if ($user) { ?>
@@ -110,7 +110,7 @@
 
                 <?php if (isset($result) && $result) { ?>
                     <div>
-                        <p>Thank you for signing up!</p>
+                        <p>Thank you!</p>
                     </div>
                 <?php } ?>
 

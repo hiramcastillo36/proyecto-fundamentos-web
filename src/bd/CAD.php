@@ -155,6 +155,31 @@ class CAD {
         return $user;
     }
 
+    public function createComment($post_id, $user_id, $text){
+        $query = "INSERT INTO comments (post_id, user_id, text) VALUES (:post_id, :user_id, :text)";
+        $stmt = $this->conexion->conectar()->prepare($query);
+        $stmt->bindParam(':post_id', $post_id);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':text', $text);
+        $stmt->execute();
+        $result = true;
+        return $result;
+    }
+
+    public function getCommentsByPostId($post_id){
+        $query = "SELECT c.*, u.email as author_name
+                 FROM comments c
+                 LEFT JOIN users u ON c.user_id = u.id
+                 WHERE c.post_id = :post_id
+                 ORDER BY c.created_at DESC";
+
+        $stmt = $this->conexion->conectar()->prepare($query);
+        $stmt->bindParam(':post_id', $post_id);
+        $stmt->execute();
+        $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $comments;
+    }
+
 }
 
 

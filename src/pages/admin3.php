@@ -1,12 +1,19 @@
 <?php
 
-session_start();
+    session_start();
 
-$cad = new CAD();
+    include_once '../bd/CAD.php';
+
+    $cad = new CAD();
     $user = null;
 
     if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         $user = $cad->getUserById($_SESSION['user_id']);
+    }
+
+    if ($user === null || $user['role'] !== 'admin') {
+        header('Location: index.php');
+        exit;
     }
 
 ?>
