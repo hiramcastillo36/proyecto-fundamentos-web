@@ -59,7 +59,7 @@
             </nav>
 
             <section>
-                <h2 class="section-title">Upload post</h2>
+                <h2 class="section-title" >Upload post</h2>
                 <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
                     <input type="text" class="form-input" placeholder="Title post" required name="title">
                     <input type="number" class="form-input" placeholder="Read time" required name="readTime">
@@ -86,7 +86,7 @@
                     </div>
                     <div class="form-group">
                         <label class="checkbox-container">
-                            <input type="checkbox" name="is_newsletter_exclusive" id="is_newsletter_exclusive">
+                            <input type="checkbox" name="is_newsletter_exclusive" id="is_newsletter_exclusive" checked />
                             <span class="checkbox-label">Newsletter Exclusive Content</span>
                         </label>
                         <p class="help-text">Check this if the post should only be visible to newsletter subscribers</p>
@@ -181,12 +181,33 @@
                 const formData = new FormData(this);
                 formData.append('content', testEditor.getHTML());
 
+                const alertDiv = document.createElement('div');
+                alertDiv.style.marginBottom = '20px';
+
+                const newsletterCheckbox = document.getElementById('is_newsletter_exclusive');
+                formData.set('is_newsletter_exclusive', newsletterCheckbox.checked ? '1' : '0');
+
                 fetch('../bd/post.php', {
                     method: 'POST',
                     body: formData
                 })
+                .then(response => {
+                    alertDiv.className = 'alert alert-success';
+                    alertDiv.textContent = 'Post created successfully!';
+                    uploadForm.insertBefore(alertDiv, uploadForm.firstChild);
+
+                    // redirect to form section
+                    window.location.href = '#uploadForm';
+
+
+                })
                 .catch(error => {
-                    alert('Error uploading post: ' + error.message);
+                    alertDiv.className = 'alert alert-danger';
+                    alertDiv.textContent = 'Error uploading post: ' + error.message;
+                    uploadForm.insertBefore(alertDiv, uploadForm.firstChild);
+
+                    // redirect to top page
+
                 });
             });
         });

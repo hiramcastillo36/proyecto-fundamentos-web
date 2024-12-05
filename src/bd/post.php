@@ -1,5 +1,5 @@
 <?php
-// process_upload.php
+
 include_once 'CAD.php';
 
 header('Content-Type: application/json');
@@ -11,7 +11,7 @@ try {
     }
 
     if (!isset($_FILES['image']) || !isset($_POST['title']) || !isset($_POST['readTime']) ||
-        !isset($_POST['description']) || !isset($_POST['content']) || !isset($_POST['is_newsletter_exclusive'])) {
+        !isset($_POST['description']) || !isset($_POST['content'])) {
         throw new Exception("Missing required fields");
     }
 

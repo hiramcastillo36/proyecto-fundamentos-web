@@ -107,6 +107,9 @@ class CAD
         $stmt->execute();
         $image_id = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
 
+        // check if is newsletter exclusive
+        $is_newsletter_exclusive = $is_newsletter_exclusive ? 1 : 0;
+
         # create post record in posts table with newsletter_exclusive flag
         $query = "INSERT INTO posts (title, body, author_id, read_time, description, image_id, is_newsletter_exclusive)
                   VALUES (:title, :body, :author_id, :read_time, :description, :image_id, :is_newsletter_exclusive)";

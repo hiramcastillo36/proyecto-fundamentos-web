@@ -59,7 +59,7 @@
 <body>
     <div class="container">
       <div class="topnav" id="myTopnav">
-        <a href="index.php" class="active">BYTE Y PIXEL</a>
+        <a href="../index.php" class="active">BYTE Y PIXEL</a>
         <div class="navoptions" id="navOptions">
           <a href="about.php">About</a>
             <?php if ($user) { ?>
