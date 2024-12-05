@@ -10,11 +10,6 @@
         $user = $cad->getUserById($_SESSION['user_id']);
     }
 
-    if ($user === null || $user['role'] !== 'admin') {
-        header('Location: ../index.php');
-        exit;
-    }
-
 ?>
 
 <!DOCTYPE html>
