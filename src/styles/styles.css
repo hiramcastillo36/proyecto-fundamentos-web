@@ -1425,3 +1425,42 @@ h2 {
 #file-input {
   display: none;
 }
+
+.like-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid #eaeaea;
+    border-radius: 20px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.like-button:hover:not([disabled]) {
+    background: #f5f5f5;
+}
+
+.like-button.liked {
+    background: #ffebee;
+    border-color: #ffcdd2;
+}
+
+.like-button.liked i {
+    color: #e53935;
+}
+
+.like-button[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.like-section {
+    display: flex;
+    align-items: center;
+}
+
+.like-form {
+    margin: 0;
+}

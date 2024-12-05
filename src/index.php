@@ -59,9 +59,12 @@
       <div class="topnav" id="myTopnav">
         <a href="index.php" class="active">BYTE Y PIXEL</a>
         <div class="navoptions" id="navOptions">
-          <a href="pages/about.html">About</a>
+          <a href="pages/about.php">About</a>
             <?php if ($user) { ?>
                 <a href="bd/logout.php">Logout</a>
+                <?php if ($user['role'] === 'admin') { ?>
+                    <a href="pages/admin.php">Admin</a>
+                <?php } ?>
             <?php } else { ?>
                 <a href="pages/login.php">Login</a>
                 <a href="pages/signup.php">Sign Up</a>

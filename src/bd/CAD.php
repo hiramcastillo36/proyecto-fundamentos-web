@@ -180,6 +180,93 @@ class CAD {
         return $comments;
     }
 
+    public function deletePost($post_id) {
+        try {
+            $stmt = $this->conexion->conectar()->prepare("DELETE FROM posts WHERE id = :id");
+            $stmt->bindParam(':id', $post_id);
+            $stmt->execute();
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+
+            echo $e;
+            return false;
+        }
+    }
+
+    public function getPosts($offset = 0, $limit = 10) {
+        try {
+            $stmt = $this->conexion->conectar()->prepare("
+                    SELECT posts.*, images.filename as image_url, users.email as author_name
+                    FROM posts
+                    LEFT JOIN images ON posts.image_id = images.id
+                    LEFT JOIN users ON posts.author_id = users.id
+                    ORDER BY posts.created_at DESC LIMIT ? OFFSET ?
+                 ");
+            $stmt->bindParam(1, $limit, PDO::PARAM_INT);
+            $stmt->bindParam(2, $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error getting posts: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getTotalPosts() {
+        try {
+            $stmt = $this->conexion->conectar()->query("SELECT COUNT(*) FROM posts");
+            return $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Error getting total posts count: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    public function addLike($postId, $userId) {
+        try {
+            $stmt = $this->conexion->conectar()->prepare("INSERT INTO votes (post_id, user_id) VALUES (:post_id, :user_id)");
+            $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            // Si es un error de duplicado (código 23000)
+            if ($e->getCode() == '23000') {
+                return false;
+            }
+            throw $e;
+        }
+    }
+
+    public function removeLike($postId, $userId) {
+        $stmt = $this->conexion->conectar()->prepare("DELETE FROM votes WHERE post_id = :post_id AND user_id = :user_id");
+        $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function getLikesCount($postId) {
+        $stmt = $this->conexion->conectar()->prepare("SELECT COUNT(*) as count FROM votes WHERE post_id = :post_id");
+        $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'];
+    }
+
+    public function hasUserLiked($postId, $userId) {
+        $stmt = $this->conexion->conectar()->prepare("SELECT 1 FROM votes WHERE post_id = :post_id AND user_id = :user_id");
+        $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
+    public function getUserWithNewsletter($id) {
+        $stmt = $this->conexion->conectar()->prepare("SELECT 1 FROM newsletter WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
 }
 
 

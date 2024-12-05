@@ -26,6 +26,17 @@
         header("Location: article.php?id=" . $post_id);
         exit();
     }
+    if (isset($_POST['like_action']) && $user) {
+        $action = $_POST['like_action'];
+        if ($action === 'like') {
+            $cad->addLike($post_id, $user['id']);
+        } else if ($action === 'unlike') {
+            $cad->removeLike($post_id, $user['id']);
+        }
+        // Redirigir para evitar reenvío del formulario
+        header("Location: article.php?id=" . $post_id);
+        exit();
+    }
 
     unset($_POST['email']);
     unset($_POST['comment']);
@@ -34,6 +45,8 @@
     $post = $cad->getPost($post_id);
 
     $allPosts = $cad->getAllPosts(0, 6);
+
+    $userWithNewsletter = $user ? $cad->getUserWithNewsletter($user['id']) : false;
 ?>
 
 <!DOCTYPE html>
@@ -56,8 +69,14 @@
       <div class="topnav" id="myTopnav">
         <a href="../index.php" class="active">BYTE Y PIXEL</a>
         <div class="navoptions" id="navOptions">
-          <a href="about.html">About</a>
+          <a href="about.php">About</a>
             <?php if ($user) { ?>
+                <?php if ($user['role'] === 'admin') { ?>
+                    <a href="admin.php">Admin</a>
+                <?php } ?>
+                <?php if ($userWithNewsletter) { ?>
+                    <a href="newsletter.php">Newsletter</a>
+                <?php } ?>
                 <a href="bd/logout.php">Logout</a>
             <?php } else { ?>
                 <a href="login.php">Login</a>
@@ -82,21 +101,31 @@
                 <div class="article-content">
                     <div class="line"></div>
                     <div class="article-meta">
-                      <div class="article-info">
+                    <div class="article-info">
                         <div class="author"><?php echo $post['author_name']; ?></div>
                         <div class="date"><?php echo date("l, F j, Y", strtotime($post['created_at'])); ?> <?php echo $post['read_time']; ?> min read</div>
-                      </div>
-                        <div class="share">
-                            <div class="share-icon">
-                              <img src="../assets/images/facebook1.svg" alt="Facebook">
-                            </div>
-                            <div style="height: 50px; width: 1px; background: #eaeaea;"></div>
-                            <div class="share-icon">
-                              <img src="../assets/images/Vector.svg" alt="Twitter">
-                            </div>
-                        </div>
-
                     </div>
+                    <div class="like-section">
+                        <?php
+                        $likesCount = $cad->getLikesCount($post_id);
+                        $hasLiked = $user ? $cad->hasUserLiked($post_id, $user['id']) : false;
+                        ?>
+                        <?php if ($user) { ?>
+                            <form method="post" class="like-form">
+                                <input type="hidden" name="like_action" value="<?php echo $hasLiked ? 'unlike' : 'like'; ?>">
+                                <button type="submit" class="like-button <?php echo $hasLiked ? 'liked' : ''; ?>">
+                                    <i class="fa fa-heart<?php echo $hasLiked ? '' : '-o'; ?>"></i>
+                                    <span><?php echo $likesCount; ?></span>
+                                </button>
+                            </form>
+                        <?php } else { ?>
+                            <button class="like-button" disabled>
+                                <i class="fa fa-heart-o"></i>
+                                <span><?php echo $likesCount; ?></span>
+                            </button>
+                        <?php } ?>
+                    </div>
+                </div>
 
                     <div class="article-text">
                       <?php echo $post['body']; ?>

@@ -1,3 +1,22 @@
+<?php
+    session_start();
+
+    include_once '../bd/CAD.php';
+
+    $cad = new CAD();
+    $user = null;
+
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        $user = $cad->getUserById($_SESSION['user_id']);
+    }
+
+    if ($user === null || $user['role'] !== 'admin') {
+        header('Location: ../index.php');
+        exit;
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,7 +31,16 @@
         <div class="topnav" id="myTopnav">
           <a href="../index.php" class="active">BYTE Y PIXEL</a>
           <div class="navoptions">
+          <?php if ($user) { ?>
 
+            <?php if ($user['role'] === 'admin') { ?>
+            <a href="admin.php">Admin</a>
+            <?php } ?>
+            <a href="bd/logout.php">Logout</a>
+            <?php } else { ?>
+            <a href="pages/login.php">Login</a>
+            <a href="pages/signup.php">Sign Up</a>
+            <?php } ?>
 
           </div>
           <a href="javascript:void(0);" class="icon" onclick="myFunction()">

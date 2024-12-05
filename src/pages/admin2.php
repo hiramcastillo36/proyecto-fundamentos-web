@@ -11,7 +11,7 @@
     }
 
     if ($user === null || $user['role'] !== 'admin') {
-        header('Location: index.php');
+        header('Location: ../index.php');
         exit;
     }
 
@@ -167,8 +167,12 @@
     <div class="topnav" id="myTopnav">
         <a href="../index.php" class="active">BYTE Y PIXEL</a>
         <div class="navoptions" id="navOptions">
-          <a href="pages/about.html">About</a>
+          <a href="about.php">About</a>
             <?php if ($user) { ?>
+
+                <?php if ($user['role'] === 'admin') { ?>
+                    <a href="admin.php">Admin</a>
+                <?php } ?>
                 <a href="bd/logout.php">Logout</a>
             <?php } else { ?>
                 <a href="pages/login.php">Login</a>
@@ -181,7 +185,8 @@
         <h1 class="welcome">Hello Admi!</h1>
 
         <nav class="admin-nav">
-            <a href="admin2.php">BLOG SUBSCRIBER</a>
+            <a href="admin.php">MANAGE POSTS</a>
+            <a href="admin2.php">BLOG SUBSCRIBERS</a>
             <a href="admin3.php">UPLOAD POST</a>
         </nav>
 
