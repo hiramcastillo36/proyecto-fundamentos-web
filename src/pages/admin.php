@@ -38,6 +38,8 @@
     $total_posts = $cad->getTotalPosts();
     $total_pages = ceil($total_posts / $items_per_page);
 
+    $isNewsletterSubscriber = $user ? $cad->getUserWithNewsletter($user['id']) : false;
+
 ?>
 
 <!DOCTYPE html>
@@ -145,19 +147,23 @@
     <div class="container">
         <div class="topnav" id="myTopnav">
             <a href="../index.php" class="active">BYTE Y PIXEL</a>
-            <div class="navoptions" id="navOptions">
-                <a href="about.php">About</a>
-                <?php if ($user) { ?>
 
+            <div class="navoptions" id="navOptions">
+            <a href="about.php">About</a>
+                <?php if ($user) { ?>
+                    <?php if ($isNewsletterSubscriber) { ?>
+                    <a href="newsletter.php">Newsletter</a>
+                <?php } ?>
                     <?php if ($user['role'] === 'admin') { ?>
                     <a href="admin.php">Admin</a>
                 <?php } ?>
-                <a href="bd/logout.php">Logout</a>
+                <a href="../bd/logout.php">Logout</a>
                 <?php } else { ?>
                     <a href="pages/login.php">Login</a>
                     <a href="pages/signup.php">Sign Up</a>
                 <?php } ?>
             </div>
+
         </div>
 
         <main class="main">
@@ -196,6 +202,7 @@
                                 <th>Title</th>
                                 <th>Author</th>
                                 <th>Created At</th>
+                                <th>Is Newsletter Exclusive</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -205,6 +212,7 @@
                                     <td data-label="Title"><?php echo htmlspecialchars($post['title']); ?></td>
                                     <td data-label="Author"><?php echo htmlspecialchars($post['author_name']); ?></td>
                                     <td data-label="Created At"><?php echo htmlspecialchars($post['created_at']); ?></td>
+                                    <td data-label="Is Newsletter Exclusive"><?php echo $post['is_newsletter_exclusive'] ? 'Yes' : 'No'; ?></td>
                                     <td data-label="Actions">
                                         <form method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this post?');">
                                             <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">

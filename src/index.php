@@ -69,6 +69,9 @@
                 <?php if ($user['role'] === 'admin') { ?>
                     <a href="pages/admin.php">Admin</a>
                 <?php } ?>
+                <?php if ($isNewsletterSubscriber) { ?>
+                    <a href="pages/newsletter.php">Newsletter</a>
+                <?php } ?>
             <?php } else { ?>
                 <a href="pages/login.php">Login</a>
                 <a href="pages/signup.php">Sign Up</a>
@@ -110,7 +113,8 @@
                 </div>
             </section>
 
-            <section class="newsletter">
+            <? if (!$isNewsletterSubscriber) { ?>
+                <section class="newsletter">
                 <h2>Sign up for the newsletter</h2>
                 <p>If you want to be notified when we publish something new, sign up for the newsletter:</p>
 
@@ -125,6 +129,7 @@
                     <button type="submit">Sign up</button>
                 </form>
             </section>
+            <? } ?>
         </main>
     </div>
     <footer>

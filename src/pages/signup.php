@@ -6,6 +6,9 @@
         $result = $cad->signUp($_POST['email'], $_POST['password']);
 
         if ($result) {
+            $user = $cad->getUser($_POST['email']);
+            session_start();
+            $_SESSION['user_id'] = $user['id'];
             header('Location: ../index.php');
         }
     }

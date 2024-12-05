@@ -47,6 +47,7 @@
     $allPosts = $cad->getAllPosts(0, 6);
 
     $userWithNewsletter = $user ? $cad->getUserWithNewsletter($user['id']) : false;
+    $isNewsletterSubscriber = $user ? $cad->getUserWithNewsletter($user['id']) : false;
 ?>
 
 <!DOCTYPE html>
@@ -77,7 +78,7 @@
                 <?php if ($userWithNewsletter) { ?>
                     <a href="newsletter.php">Newsletter</a>
                 <?php } ?>
-                <a href="bd/logout.php">Logout</a>
+                <a href="../bd/logout.php">Logout</a>
             <?php } else { ?>
                 <a href="login.php">Login</a>
                 <a href="signup.php">Sign Up</a>
@@ -215,7 +216,8 @@
     </div>
 </section>
 
-            <section class="newsletter">
+<? if (!$isNewsletterSubscriber) { ?>
+                <section class="newsletter">
                 <h2>Sign up for the newsletter</h2>
                 <p>If you want to be notified when we publish something new, sign up for the newsletter:</p>
 
@@ -225,11 +227,12 @@
                     </div>
                 <?php } ?>
 
-                <form class="newsletter-form" action="article.php?id=<?php echo $post['id']; ?>" method="post">
+                <form class="newsletter-form" action="article.php?id=<?php echo $post_id; ?>" method="post">
                     <input type="email" placeholder="Enter your email..." name="email" required>
                     <button type="submit">Sign up</button>
                 </form>
             </section>
+            <? } ?>
         </main>
     </div>
     <footer>

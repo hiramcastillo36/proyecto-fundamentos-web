@@ -25,8 +25,6 @@
         } catch (Exception $e) {
             $result = false;
         }
-
-
     }
 
 
@@ -65,6 +63,9 @@
         <div class="navoptions" id="navOptions">
           <a href="about.php">About</a>
             <?php if ($user) { ?>
+                <?php if ($isNewsletterSubscriber) { ?>
+                    <a href="newsletter.php">Newsletter</a>
+                <?php } ?>
                 <a href="../bd/logout.php">Logout</a>
                 <?php if ($user['role'] === 'admin') { ?>
                     <a href="admin.php">Admin</a>

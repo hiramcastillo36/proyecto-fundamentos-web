@@ -24,6 +24,8 @@
     $subscribers = $cad->getNewsletterSubscribers($offset, $items_per_page);
     $total_subscribers = $cad->getTotalSubscribers();
     $total_pages = ceil($total_subscribers / $items_per_page);
+
+    $isNewsletterSubscriber = $user ? $cad->getUserWithNewsletter($user['id']) : false;
 ?>
 
 
@@ -169,11 +171,14 @@
         <div class="navoptions" id="navOptions">
           <a href="about.php">About</a>
             <?php if ($user) { ?>
-
+                <?php if ($isNewsletterSubscriber) { ?>
+                    <a href="newsletter.php">Newsletter</a>
+                <?php } ?>
                 <?php if ($user['role'] === 'admin') { ?>
                     <a href="admin.php">Admin</a>
+
                 <?php } ?>
-                <a href="bd/logout.php">Logout</a>
+                <a href="../bd/logout.php">Logout</a>
             <?php } else { ?>
                 <a href="pages/login.php">Login</a>
                 <a href="pages/signup.php">Sign Up</a>
@@ -182,7 +187,7 @@
       </div>
 
     <main class="main">
-        <h1 class="welcome">Hello Admi!</h1>
+        <h1 class="welcome">Hello Admin!</h1>
 
         <nav class="admin-nav">
             <a href="admin.php">MANAGE POSTS</a>

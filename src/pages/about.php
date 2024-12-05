@@ -9,6 +9,7 @@
     if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
         $user = $cad->getUserById($_SESSION['user_id']);
     }
+    $isNewsletterSubscriber = $user ? $cad->getUserWithNewsletter($user['id']) : false;
 
 ?>
 
@@ -31,10 +32,13 @@
             <?php if ($user['role'] === 'admin') { ?>
             <a href="admin.php">Admin</a>
             <?php } ?>
-            <a href="bd/logout.php">Logout</a>
+            <?php if ($isNewsletterSubscriber) { ?>
+                    <a href="newsletter.php">Newsletter</a>
+                <?php } ?>
+                <a href="../bd/logout.php">Logout</a>
             <?php } else { ?>
-            <a href="pages/login.php">Login</a>
-            <a href="pages/signup.php">Sign Up</a>
+            <a href="login.php">Login</a>
+            <a href="signup.php">Sign Up</a>
             <?php } ?>
 
           </div>
