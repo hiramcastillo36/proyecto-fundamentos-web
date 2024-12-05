@@ -11,7 +11,7 @@ try {
     }
 
     if (!isset($_FILES['image']) || !isset($_POST['title']) || !isset($_POST['readTime']) ||
-        !isset($_POST['description']) || !isset($_POST['content'])) {
+        !isset($_POST['description']) || !isset($_POST['content']) || !isset($_POST['is_newsletter_exclusive'])) {
         throw new Exception("Missing required fields");
     }
 
@@ -36,7 +36,7 @@ try {
 
     $cad = new CAD();
 
-    $result = $cad->createBlogPost($_POST['title'], $_POST['content'], $_SESSION['user_id'], $_POST['readTime'], $_POST['description'], $fileName);
+    $result = $cad->createBlogPost($_POST['title'], $_POST['content'], $_SESSION['user_id'], $_POST['readTime'], $_POST['description'], $fileName, (bool)$_POST['is_newsletter_exclusive']);
 
     if (!$result) {
         throw new Exception("Failed to save post to database");

@@ -2,14 +2,17 @@
 
 require_once 'conexion.php';
 
-class CAD {
+class CAD
+{
     private $conexion;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->conexion = new Conexion();
     }
 
-    public function insertNewsletter($email) {
+    public function insertNewsletter($email)
+    {
         try {
             $sql = "INSERT INTO newsletter (email) VALUES (:email)";
             $stmt = $this->conexion->conectar()->prepare($sql);
@@ -23,7 +26,8 @@ class CAD {
         }
     }
 
-    public function signIn ($email, $password) {
+    public function signIn($email, $password)
+    {
         try {
             $stmt = $this->conexion->conectar()->prepare("SELECT * FROM users WHERE email = :email");
             $stmt->bindParam(':email', $email);
@@ -42,7 +46,8 @@ class CAD {
         }
     }
 
-    public function signUp ($email, $password) {
+    public function signUp($email, $password)
+    {
         try {
             $stmt = $this->conexion->conectar()->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
             $stmt->bindParam(':email', $email);
@@ -61,14 +66,14 @@ class CAD {
             $stmt->execute();
             $result = true;
             return $result;
-
         } catch (Exception $e) {
             $result = false;
             return $result;
         }
     }
 
-    public function getNewsletterSubscribers($offset = 0, $limit = 10) {
+    public function getNewsletterSubscribers($offset = 0, $limit = 10)
+    {
         $query = "SELECT * FROM newsletter ORDER BY created_at DESC LIMIT ? OFFSET ?";
         $stmt = $this->conexion->conectar()->prepare($query);
         $stmt->bindParam(1, $limit, PDO::PARAM_INT);
@@ -78,7 +83,8 @@ class CAD {
         return $subscribers;
     }
 
-    public function getTotalSubscribers() {
+    public function getTotalSubscribers()
+    {
         $query = "SELECT COUNT(*) as total FROM newsletter";
         $stmt = $this->conexion->conectar()->prepare($query);
         $stmt->execute();
@@ -86,7 +92,8 @@ class CAD {
         return $total['total'];
     }
 
-    public function createBlogPost($title, $body, $author_id, $read_time, $description, $image){
+    public function createBlogPost($title, $body, $author_id, $read_time, $description, $image, $is_newsletter_exclusive)
+    {
         # create image record in images table
         $query = "INSERT INTO images (filename) VALUES (:url)";
         $stmt = $this->conexion->conectar()->prepare($query);
@@ -100,8 +107,9 @@ class CAD {
         $stmt->execute();
         $image_id = $stmt->fetch(PDO::FETCH_ASSOC)['id'];
 
-        # create post record in posts table
-        $query = "INSERT INTO posts (title, body, author_id, read_time, description, image_id) VALUES (:title, :body, :author_id, :read_time, :description, :image_id)";
+        # create post record in posts table with newsletter_exclusive flag
+        $query = "INSERT INTO posts (title, body, author_id, read_time, description, image_id, is_newsletter_exclusive)
+                  VALUES (:title, :body, :author_id, :read_time, :description, :image_id, :is_newsletter_exclusive)";
         $stmt = $this->conexion->conectar()->prepare($query);
         $stmt->bindParam(':title', $title);
         $stmt->bindParam(':body', $body);
@@ -109,94 +117,18 @@ class CAD {
         $stmt->bindParam(':read_time', $read_time);
         $stmt->bindParam(':description', $description);
         $stmt->bindParam(':image_id', $image_id);
+        $stmt->bindParam(':is_newsletter_exclusive', $is_newsletter_exclusive);
         $stmt->execute();
         $result = true;
         return $result;
     }
 
-    public function getUser($email) {
-        $query = "SELECT * FROM users WHERE email = :email";
-        $stmt = $this->conexion->conectar()->prepare($query);
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $user;
-    }
-
-    public function getAllPosts($offset = 0, $limit = 6) {
-        $query = "SELECT p.*, i.filename as image FROM posts p JOIN images i ON p.image_id = i.id ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
-        $stmt = $this->conexion->conectar()->prepare($query);
-        $stmt->bindParam(1, $limit, PDO::PARAM_INT);
-        $stmt->bindParam(2, $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $posts;
-    }
-
-    public function getPost($id) {
-        $query = "SELECT posts.*, images.filename as image_url, users.email as author_name
-                 FROM posts
-                 LEFT JOIN images ON posts.image_id = images.id
-                 LEFT JOIN users ON posts.author_id = users.id
-                 WHERE posts.id = :id";
-        $stmt = $this->conexion->conectar()->prepare($query);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-        $post = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $post;
-    }
-
-    public function getUserById($id){
-        $query = "SELECT * FROM users WHERE id = :id";
-        $stmt = $this->conexion->conectar()->prepare($query);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $user;
-    }
-
-    public function createComment($post_id, $user_id, $text){
-        $query = "INSERT INTO comments (post_id, user_id, text) VALUES (:post_id, :user_id, :text)";
-        $stmt = $this->conexion->conectar()->prepare($query);
-        $stmt->bindParam(':post_id', $post_id);
-        $stmt->bindParam(':user_id', $user_id);
-        $stmt->bindParam(':text', $text);
-        $stmt->execute();
-        $result = true;
-        return $result;
-    }
-
-    public function getCommentsByPostId($post_id){
-        $query = "SELECT c.*, u.email as author_name
-                 FROM comments c
-                 LEFT JOIN users u ON c.user_id = u.id
-                 WHERE c.post_id = :post_id
-                 ORDER BY c.created_at DESC";
-
-        $stmt = $this->conexion->conectar()->prepare($query);
-        $stmt->bindParam(':post_id', $post_id);
-        $stmt->execute();
-        $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $comments;
-    }
-
-    public function deletePost($post_id) {
-        try {
-            $stmt = $this->conexion->conectar()->prepare("DELETE FROM posts WHERE id = :id");
-            $stmt->bindParam(':id', $post_id);
-            $stmt->execute();
-            return $stmt->rowCount() > 0;
-        } catch (PDOException $e) {
-
-            echo $e;
-            return false;
-        }
-    }
-
-    public function getPosts($offset = 0, $limit = 10) {
+    // Also update the getPosts method to include the new field
+    public function getPosts($offset = 0, $limit = 10)
+    {
         try {
             $stmt = $this->conexion->conectar()->prepare("
-                    SELECT posts.*, images.filename as image_url, users.email as author_name
+                    SELECT posts.*, images.filename as image_url, users.email as author_name, posts.is_newsletter_exclusive
                     FROM posts
                     LEFT JOIN images ON posts.image_id = images.id
                     LEFT JOIN users ON posts.author_id = users.id
@@ -212,7 +144,138 @@ class CAD {
         }
     }
 
-    public function getTotalPosts() {
+    public function getUser($email)
+    {
+        $query = "SELECT * FROM users WHERE email = :email";
+        $stmt = $this->conexion->conectar()->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user;
+    }
+
+    public function getAllPosts($offset = 0, $limit = 6, $newsletter = false)
+    {
+        // Base query for all posts
+        $query = "SELECT p.*, i.filename as image, u.email as author_name
+    FROM posts p
+    JOIN images i ON p.image_id = i.id
+    LEFT JOIN users u ON p.author_id = u.id
+    WHERE 1=1 ";
+
+        // If user is not a subscriber, only show non-exclusive posts
+        if (!$newsletter) {
+            $query .= "AND p.is_newsletter_exclusive = 0 ";
+        }
+
+        // Add ordering and limit
+        $query .= "ORDER BY p.created_at DESC
+     LIMIT ? OFFSET ?";
+
+        try {
+            $stmt = $this->conexion->conectar()->prepare($query);
+
+            // Bind parameters
+            $stmt->bindParam(1, $limit, PDO::PARAM_INT);
+            $stmt->bindParam(2, $offset, PDO::PARAM_INT);
+
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error getting posts: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getNewsletterPosts($offset = 0, $limit = 6)
+    {
+        $query = "SELECT p.*, i.filename as image, u.email as author_name
+                 FROM posts p
+                 JOIN images i ON p.image_id = i.id
+                 LEFT JOIN users u ON p.author_id = u.id
+                 WHERE p.is_newsletter_exclusive = 1
+                 ORDER BY p.created_at DESC
+                 LIMIT ? OFFSET ?";
+
+        try {
+            $stmt = $this->conexion->conectar()->prepare($query);
+            $stmt->bindParam(1, $limit, PDO::PARAM_INT);
+            $stmt->bindParam(2, $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error getting newsletter posts: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function getPost($id)
+    {
+        $query = "SELECT posts.*, images.filename as image_url, users.email as author_name
+                 FROM posts
+                 LEFT JOIN images ON posts.image_id = images.id
+                 LEFT JOIN users ON posts.author_id = users.id
+                 WHERE posts.id = :id";
+        $stmt = $this->conexion->conectar()->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $post = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $post;
+    }
+
+    public function getUserById($id)
+    {
+        $query = "SELECT * FROM users WHERE id = :id";
+        $stmt = $this->conexion->conectar()->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user;
+    }
+
+    public function createComment($post_id, $user_id, $text)
+    {
+        $query = "INSERT INTO comments (post_id, user_id, text) VALUES (:post_id, :user_id, :text)";
+        $stmt = $this->conexion->conectar()->prepare($query);
+        $stmt->bindParam(':post_id', $post_id);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':text', $text);
+        $stmt->execute();
+        $result = true;
+        return $result;
+    }
+
+    public function getCommentsByPostId($post_id)
+    {
+        $query = "SELECT c.*, u.email as author_name
+                 FROM comments c
+                 LEFT JOIN users u ON c.user_id = u.id
+                 WHERE c.post_id = :post_id
+                 ORDER BY c.created_at DESC";
+
+        $stmt = $this->conexion->conectar()->prepare($query);
+        $stmt->bindParam(':post_id', $post_id);
+        $stmt->execute();
+        $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $comments;
+    }
+
+    public function deletePost($post_id)
+    {
+        try {
+            $stmt = $this->conexion->conectar()->prepare("DELETE FROM posts WHERE id = :id");
+            $stmt->bindParam(':id', $post_id);
+            $stmt->execute();
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+
+            echo $e;
+            return false;
+        }
+    }
+
+    public function getTotalPosts()
+    {
         try {
             $stmt = $this->conexion->conectar()->query("SELECT COUNT(*) FROM posts");
             return $stmt->fetchColumn();
@@ -222,7 +285,8 @@ class CAD {
         }
     }
 
-    public function addLike($postId, $userId) {
+    public function addLike($postId, $userId)
+    {
         try {
             $stmt = $this->conexion->conectar()->prepare("INSERT INTO votes (post_id, user_id) VALUES (:post_id, :user_id)");
             $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
@@ -237,14 +301,16 @@ class CAD {
         }
     }
 
-    public function removeLike($postId, $userId) {
+    public function removeLike($postId, $userId)
+    {
         $stmt = $this->conexion->conectar()->prepare("DELETE FROM votes WHERE post_id = :post_id AND user_id = :user_id");
         $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
-    public function getLikesCount($postId) {
+    public function getLikesCount($postId)
+    {
         $stmt = $this->conexion->conectar()->prepare("SELECT COUNT(*) as count FROM votes WHERE post_id = :post_id");
         $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
         $stmt->execute();
@@ -252,7 +318,8 @@ class CAD {
         return $result['count'];
     }
 
-    public function hasUserLiked($postId, $userId) {
+    public function hasUserLiked($postId, $userId)
+    {
         $stmt = $this->conexion->conectar()->prepare("SELECT 1 FROM votes WHERE post_id = :post_id AND user_id = :user_id");
         $stmt->bindParam(':post_id', $postId, PDO::PARAM_INT);
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -260,14 +327,36 @@ class CAD {
         return $stmt->rowCount() > 0;
     }
 
-    public function getUserWithNewsletter($id) {
+    public function getUserWithNewsletter($id)
+    {
         $stmt = $this->conexion->conectar()->prepare("SELECT 1 FROM newsletter WHERE id = :id");
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         return $stmt->rowCount() > 0;
     }
 
+    public function getLastedPost($newsletter = false)
+    {
+        $query = "SELECT p.*, i.filename as image, u.email as author_name
+                 FROM posts p
+                 JOIN images i ON p.image_id = i.id
+                 LEFT JOIN users u ON p.author_id = u.id
+                 WHERE 1=1 ";
+
+        // If user is not a subscriber, only show non-exclusive posts
+        if (!$newsletter) {
+            $query .= "AND p.is_newsletter_exclusive = 0 ";
+        }
+
+        $query .= "ORDER BY p.created_at DESC LIMIT 1";
+
+        try {
+            $stmt = $this->conexion->conectar()->prepare($query);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error getting lasted post: " . $e->getMessage());
+            return [];
+        }
+    }
 }
-
-
-?>

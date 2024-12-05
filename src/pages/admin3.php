@@ -81,6 +81,13 @@
                         <img class="preview-image" id="previewImage">
                         <p class="file-info" id="fileInfo"></p>
                     </div>
+                    <div class="form-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" name="is_newsletter_exclusive" id="is_newsletter_exclusive">
+                            <span class="checkbox-label">Newsletter Exclusive Content</span>
+                        </label>
+                        <p class="help-text">Check this if the post should only be visible to newsletter subscribers</p>
+                    </div>
                     <button type="submit" class="save-button">Save post</button>
                 </form>
             </section>

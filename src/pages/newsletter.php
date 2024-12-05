@@ -2,8 +2,8 @@
 
     session_start();
 
-    include_once("bd/conexion.php");
-    include_once("bd/CAD.php");
+    include_once("../bd/conexion.php");
+    include_once("../bd/CAD.php");
 
     $conexion = new Conexion();
     $conexion = $conexion->conectar();
@@ -37,9 +37,9 @@
 
     $isNewsletterSubscriber = $user ? $cad->getUserWithNewsletter($user['id']) : false;
 
-    $allPosts = $cad->getAllPosts(0, 6, $isNewsletterSubscriber);
+    $allPosts = $cad->getNewsletterPosts(0, 6);
 
-    $lastedPost = $cad->getLastedPost();
+    $lastedPost = $cad->getLastedPost(true);
 
 ?>
 
@@ -49,7 +49,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BYTE Y PIXEL - Blog</title>
-    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="../styles/styles.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@500&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=New+York+Extra+Large:wght@700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=SF+Mono:wght@400&display=swap" />
@@ -63,15 +63,15 @@
       <div class="topnav" id="myTopnav">
         <a href="index.php" class="active">BYTE Y PIXEL</a>
         <div class="navoptions" id="navOptions">
-          <a href="pages/about.php">About</a>
+          <a href="about.php">About</a>
             <?php if ($user) { ?>
-                <a href="bd/logout.php">Logout</a>
+                <a href="../bd/logout.php">Logout</a>
                 <?php if ($user['role'] === 'admin') { ?>
-                    <a href="pages/admin.php">Admin</a>
+                    <a href="admin.php">Admin</a>
                 <?php } ?>
             <?php } else { ?>
-                <a href="pages/login.php">Login</a>
-                <a href="pages/signup.php">Sign Up</a>
+                <a href="login.php">Login</a>
+                <a href="signup.php">Sign Up</a>
             <?php } ?>
         </div>
         <a href="javascript:void(0);" class="icon" onclick="myFunction()">
@@ -81,26 +81,28 @@
 
         <main>
             <article class="hero">
-            <div class="feature-image">
-                    <img src="uploads/<?php echo $lastedPost['image']; ?>" alt="Image">
+
+                <div class="feature-image">
+                    <img src="../uploads/<?php echo $lastedPost['image']; ?>" alt="Image">
                 </div>
+
                 <div class="article-title">
                     <h1><?php echo $lastedPost['title']; ?></h1>
                     <p class="subtitle"><?php echo $lastedPost['description']; ?></p>
-                </div>
 
+                </div>
 
             </article>
 
             <div class="line"></div>
 
             <section class="read-next">
-                <h2>All articles</h2>
+                <h2>Exclusive content for newsletter subscribers</h2>
                 <div class="article-grid-home">
                     <?php foreach ($allPosts as $post) { ?>
-                        <a href="/pages/article.php?id=<?php echo $post['id']; ?>">
+                        <a href="article.php?id=<?php echo $post['id']; ?>">
                             <div class="article-preview">
-                                <img src="uploads/<?php echo $post['image']; ?>" alt="Image">
+                                <img src="../uploads/<?php echo $post['image']; ?>" alt="Image">
                             <p>
                                 <?php echo $post['title']; ?>
                             </p>
@@ -110,21 +112,6 @@
                 </div>
             </section>
 
-            <section class="newsletter">
-                <h2>Sign up for the newsletter</h2>
-                <p>If you want to be notified when we publish something new, sign up for the newsletter:</p>
-
-                <?php if (isset($result) && $result) { ?>
-                    <div>
-                        <p>Thank you!</p>
-                    </div>
-                <?php } ?>
-
-                <form class="newsletter-form" action="index.php" method="post">
-                    <input type="email" placeholder="Enter your email..." name="email" required>
-                    <button type="submit">Sign up</button>
-                </form>
-            </section>
         </main>
     </div>
     <footer>
